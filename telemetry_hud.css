@@ -1,0 +1,80 @@
+/* Telemetry HUD (Bottom Left) */
+#telemetry-hud {
+    position: fixed;
+    bottom: 1rem;
+    left: 1rem;
+    background: linear-gradient(135deg, rgba(20, 20, 30, 0.95), rgba(30, 30, 50, 0.9));
+    padding: 1rem 1.5rem;
+    border-radius: 12px;
+    border: 2px solid rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(10px);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+    z-index: 100;
+    font-family: "JetBrains Mono", monospace;
+}
+
+.telemetry-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 0.4rem 0;
+    gap: 1.5rem;
+}
+
+.telemetry-label {
+    font-size: 0.7rem;
+    color: #aaa;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: 600;
+}
+
+.telemetry-value {
+    font-size: 1.4rem;
+    font-weight: 800;
+    color: #fff;
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+    min-width: 80px;
+    text-align: right;
+}
+
+/* Czech flag colors for values */
+.telemetry-item:nth-child(1) .telemetry-value {
+    color: #ff1744;
+    /* RPM - Red */
+}
+
+.telemetry-item:nth-child(2) .telemetry-value {
+    color: #448aff;
+    /* Speed - Blue */
+}
+
+.telemetry-item:nth-child(3) .telemetry-value {
+    color: #fff;
+    /* Gear - White */
+}
+
+/* Floating Snark */
+#floating-snark {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -150%);
+    color: #ffff00;
+    font-family: "JetBrains Mono", monospace;
+    font-weight: 800;
+    font-size: 1.2rem;
+    text-align: center;
+    text-shadow: 2px 2px 0px #000, 0 0 10px rgba(255, 255, 0, 0.5);
+    pointer-events: none;
+    z-index: 200;
+    opacity: 0;
+    transition: opacity 0.3s, transform 0.3s;
+    width: 100%;
+    max-width: 600px;
+}
+
+#floating-snark.visible {
+    opacity: 1;
+    transform: translate(-50%, -200%);
+}

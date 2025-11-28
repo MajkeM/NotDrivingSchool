@@ -46,77 +46,90 @@ scene.add(laneLines);
 function createPlayerCar() {
   const group = new THREE.Group();
   
-  // Main body
-  const bodyGeo = new THREE.BoxGeometry(1.9, 0.7, 4.2);
+  // Main body - Sportier shape
+  const bodyGeo = new THREE.BoxGeometry(1.9, 0.6, 4.4);
   const bodyMat = new THREE.MeshStandardMaterial({
     color: 0xff5fad,
-    metalness: 0.3,
-    roughness: 0.4,
+    metalness: 0.6,
+    roughness: 0.2,
   });
   const body = new THREE.Mesh(bodyGeo, bodyMat);
-  body.position.y = 0.7 / 2 + 0.1;
+  body.position.y = 0.5;
   group.add(body);
 
-  // Roof/cabin
-  const roof = new THREE.Mesh(
-    new THREE.BoxGeometry(1.1, 0.4, 1.8),
-    new THREE.MeshStandardMaterial({ color: 0x231942 })
-  );
-  roof.position.set(0, 0.9, -0.3);
-  group.add(roof);
+  // Cabin - Streamlined
+  const cabinGeo = new THREE.BoxGeometry(1.6, 0.5, 2.2);
+  const cabin = new THREE.Mesh(cabinGeo, bodyMat);
+  cabin.position.set(0, 1.0, -0.2);
+  group.add(cabin);
 
   // Windows (transparent)
   const windowMat = new THREE.MeshStandardMaterial({ 
-    color: 0x88ccff, 
-    transparent: true, 
-    opacity: 0.3,
+    color: 0x111111, 
     metalness: 0.9,
-    roughness: 0.1
+    roughness: 0.0,
+    transparent: true,
+    opacity: 0.7
   });
   
   // Windshield
   const windshield = new THREE.Mesh(
-    new THREE.BoxGeometry(1.05, 0.35, 0.1),
+    new THREE.BoxGeometry(1.5, 0.4, 0.1),
     windowMat
   );
-  windshield.position.set(0, 0.9, 0.5);
+  windshield.position.set(0, 1.0, 0.9);
+  windshield.rotation.x = -0.2;
   group.add(windshield);
   
   // Rear window
   const rearWindow = new THREE.Mesh(
-    new THREE.BoxGeometry(1.05, 0.35, 0.1),
+    new THREE.BoxGeometry(1.5, 0.4, 0.1),
     windowMat
   );
-  rearWindow.position.set(0, 0.9, -1.2);
+  rearWindow.position.set(0, 1.0, -1.3);
+  rearWindow.rotation.x = 0.1;
   group.add(rearWindow);
+
+  // Spoiler
+  const spoilerGeo = new THREE.BoxGeometry(1.8, 0.1, 0.5);
+  const spoiler = new THREE.Mesh(spoilerGeo, bodyMat);
+  spoiler.position.set(0, 0.9, -2.1);
+  group.add(spoiler);
+  
+  const spoilerLegs = new THREE.Mesh(
+    new THREE.BoxGeometry(1.4, 0.3, 0.1),
+    bodyMat
+  );
+  spoilerLegs.position.set(0, 0.7, -2.0);
+  group.add(spoilerLegs);
 
   // Neon underglow
   const neon = new THREE.Mesh(
-    new THREE.BoxGeometry(2.1, 0.1, 4.4),
+    new THREE.BoxGeometry(2.0, 0.1, 4.5),
     new THREE.MeshBasicMaterial({ color: 0x20e3ff })
   );
-  neon.position.y = 0.02;
+  neon.position.y = 0.05;
   group.add(neon);
 
   // Wheels (4 wheels with actual geometry)
-  const wheelGeo = new THREE.CylinderGeometry(0.35, 0.35, 0.3, 16);
+  const wheelGeo = new THREE.CylinderGeometry(0.38, 0.38, 0.35, 16);
   const wheelMat = new THREE.MeshStandardMaterial({ 
-    color: 0x1a1a1a,
+    color: 0x111111,
     roughness: 0.8
   });
   const rimMat = new THREE.MeshStandardMaterial({ 
     color: 0x20e3ff,
-    metalness: 0.7,
-    roughness: 0.3,
+    metalness: 0.8,
+    roughness: 0.2,
     emissive: 0x20e3ff,
-    emissiveIntensity: 0.2
+    emissiveIntensity: 0.3
   });
   
   const wheelPositions = [
-    [-0.9, 0.35, 1.4],   // Front left
-    [0.9, 0.35, 1.4],    // Front right
-    [-0.9, 0.35, -1.4],  // Rear left
-    [0.9, 0.35, -1.4]    // Rear right
+    [-0.9, 0.38, 1.4],   // Front left
+    [0.9, 0.38, 1.4],    // Front right
+    [-0.9, 0.38, -1.4],  // Rear left
+    [0.9, 0.38, -1.4]    // Rear right
   ];
   
   group.userData.wheels = [];
@@ -128,9 +141,9 @@ function createPlayerCar() {
     tire.rotation.z = Math.PI / 2;
     wheel.add(tire);
     
-    // Rim
+    // Rim (Star shape simplified)
     const rim = new THREE.Mesh(
-      new THREE.CylinderGeometry(0.15, 0.15, 0.32, 8),
+      new THREE.CylinderGeometry(0.2, 0.2, 0.36, 5),
       rimMat
     );
     rim.rotation.z = Math.PI / 2;
@@ -141,35 +154,38 @@ function createPlayerCar() {
     group.userData.wheels.push(wheel);
   });
 
-  // Headlights
-  const headlightGeo = new THREE.BoxGeometry(0.3, 0.15, 0.1);
+  // Headlights (Projector style)
+  const headlightGeo = new THREE.CylinderGeometry(0.15, 0.15, 0.2, 8);
   const headlightMat = new THREE.MeshStandardMaterial({ 
-    color: 0xffffdd,
-    emissive: 0xffffdd,
-    emissiveIntensity: 0.8
+    color: 0xffffff,
+    emissive: 0xffffff,
+    emissiveIntensity: 2.0
   });
   
   const headlightLeft = new THREE.Mesh(headlightGeo, headlightMat);
-  headlightLeft.position.set(-0.6, 0.4, 2.15);
+  headlightLeft.rotation.x = Math.PI / 2;
+  headlightLeft.position.set(-0.6, 0.5, 2.2);
   group.add(headlightLeft);
   
   const headlightRight = new THREE.Mesh(headlightGeo, headlightMat);
-  headlightRight.position.set(0.6, 0.4, 2.15);
+  headlightRight.rotation.x = Math.PI / 2;
+  headlightRight.position.set(0.6, 0.5, 2.2);
   group.add(headlightRight);
 
-  // Taillights
+  // Taillights (Strip style)
+  const taillightGeo = new THREE.BoxGeometry(0.6, 0.15, 0.1);
   const taillightMat = new THREE.MeshStandardMaterial({ 
     color: 0xff0000,
     emissive: 0xff0000,
-    emissiveIntensity: 0.6
+    emissiveIntensity: 1.5
   });
   
-  const taillightLeft = new THREE.Mesh(headlightGeo, taillightMat);
-  taillightLeft.position.set(-0.6, 0.4, -2.15);
+  const taillightLeft = new THREE.Mesh(taillightGeo, taillightMat);
+  taillightLeft.position.set(-0.6, 0.6, -2.2);
   group.add(taillightLeft);
   
-  const taillightRight = new THREE.Mesh(headlightGeo, taillightMat);
-  taillightRight.position.set(0.6, 0.4, -2.15);
+  const taillightRight = new THREE.Mesh(taillightGeo, taillightMat);
+  taillightRight.position.set(0.6, 0.6, -2.2);
   group.add(taillightRight);
 
   return group;
@@ -178,35 +194,53 @@ function createPlayerCar() {
 function createTrafficCar(color = 0xff4444) {
   const group = new THREE.Group();
   
-  // Body
-  const body = new THREE.Mesh(
-    new THREE.BoxGeometry(1.8, 0.6, 4.0),
-    new THREE.MeshStandardMaterial({ color, roughness: 0.7 })
-  );
-  body.position.y = 0.6 / 2;
+  // Body - Modern sedan shape
+  const bodyGeo = new THREE.BoxGeometry(1.8, 0.6, 4.2);
+  const bodyMat = new THREE.MeshStandardMaterial({ color, roughness: 0.5, metalness: 0.3 });
+  const body = new THREE.Mesh(bodyGeo, bodyMat);
+  body.position.y = 0.4;
   group.add(body);
   
-  // Simple windows
-  const windowMat = new THREE.MeshStandardMaterial({ 
-    color: 0x446688, 
-    transparent: true, 
-    opacity: 0.4
-  });
-  const window = new THREE.Mesh(
-    new THREE.BoxGeometry(1.2, 0.25, 1.0),
-    windowMat
-  );
-  window.position.set(0, 0.5, 0);
-  group.add(window);
+  // Cabin
+  const cabinGeo = new THREE.BoxGeometry(1.6, 0.5, 2.0);
+  const cabin = new THREE.Mesh(cabinGeo, bodyMat);
+  cabin.position.set(0, 0.9, -0.2);
+  group.add(cabin);
+
+  // Windows
+  const windowMat = new THREE.MeshStandardMaterial({ color: 0x222222, roughness: 0.1 });
+  const windshield = new THREE.Mesh(new THREE.BoxGeometry(1.5, 0.4, 0.1), windowMat);
+  windshield.position.set(0, 0.9, 0.8);
+  windshield.rotation.x = -0.2;
+  group.add(windshield);
+
+  // Lights
+  const lightGeo = new THREE.BoxGeometry(0.4, 0.15, 0.1);
+  const headLightMat = new THREE.MeshStandardMaterial({ color: 0xffffaa, emissive: 0xffffaa });
+  const tailLightMat = new THREE.MeshStandardMaterial({ color: 0xff0000, emissive: 0xff0000 });
   
-  // Simple wheels
-  const wheelGeo = new THREE.CylinderGeometry(0.3, 0.3, 0.2, 8);
+  const hl = new THREE.Mesh(lightGeo, headLightMat);
+  hl.position.set(-0.5, 0.5, 2.1);
+  group.add(hl);
+  const hr = hl.clone();
+  hr.position.set(0.5, 0.5, 2.1);
+  group.add(hr);
+  
+  const tl = new THREE.Mesh(lightGeo, tailLightMat);
+  tl.position.set(-0.5, 0.5, -2.1);
+  group.add(tl);
+  const tr = tl.clone();
+  tr.position.set(0.5, 0.5, -2.1);
+  group.add(tr);
+
+  // Wheels
+  const wheelGeo = new THREE.CylinderGeometry(0.32, 0.32, 0.25, 12);
   const wheelMat = new THREE.MeshStandardMaterial({ color: 0x1a1a1a });
   
-  [[0.8, 1.2], [0.8, -1.2], [-0.8, 1.2], [-0.8, -1.2]].forEach(pos => {
+  [[0.8, 1.3], [0.8, -1.3], [-0.8, 1.3], [-0.8, -1.3]].forEach(pos => {
     const wheel = new THREE.Mesh(wheelGeo, wheelMat);
     wheel.rotation.z = Math.PI / 2;
-    wheel.position.set(pos[0], 0.3, pos[1]);
+    wheel.position.set(pos[0], 0.32, pos[1]);
     group.add(wheel);
   });
   
@@ -218,28 +252,36 @@ function createTruck(color = 0x5555ff) {
   
   // Cabin
   const cabin = new THREE.Mesh(
-    new THREE.BoxGeometry(2.0, 1.5, 1.5),
+    new THREE.BoxGeometry(2.1, 1.8, 1.8),
     new THREE.MeshStandardMaterial({ color, roughness: 0.6 })
   );
-  cabin.position.set(0, 0.75, 1.5);
+  cabin.position.set(0, 1.1, 1.8);
   group.add(cabin);
   
-  // Cargo
+  // Grille
+  const grille = new THREE.Mesh(
+    new THREE.BoxGeometry(1.6, 0.8, 0.1),
+    new THREE.MeshStandardMaterial({ color: 0x333333, metalness: 0.5 })
+  );
+  grille.position.set(0, 0.8, 2.75);
+  group.add(grille);
+
+  // Cargo Box
   const cargo = new THREE.Mesh(
-    new THREE.BoxGeometry(2.1, 1.6, 3.5),
+    new THREE.BoxGeometry(2.2, 2.0, 4.0),
     new THREE.MeshStandardMaterial({ color: 0xdddddd, roughness: 0.9 })
   );
-  cargo.position.set(0, 0.8, -1.2);
+  cargo.position.set(0, 1.2, -1.2);
   group.add(cargo);
   
   // Wheels (6 wheels)
-  const wheelGeo = new THREE.CylinderGeometry(0.4, 0.4, 0.3, 8);
+  const wheelGeo = new THREE.CylinderGeometry(0.45, 0.45, 0.35, 12);
   const wheelMat = new THREE.MeshStandardMaterial({ color: 0x1a1a1a });
   
-  [[0.9, 1.5], [-0.9, 1.5], [0.9, -1.0], [-0.9, -1.0], [0.9, -2.5], [-0.9, -2.5]].forEach(pos => {
+  [[1.0, 1.8], [-1.0, 1.8], [1.0, -1.0], [-1.0, -1.0], [1.0, -2.8], [-1.0, -2.8]].forEach(pos => {
     const wheel = new THREE.Mesh(wheelGeo, wheelMat);
     wheel.rotation.z = Math.PI / 2;
-    wheel.position.set(pos[0], 0.4, pos[1]);
+    wheel.position.set(pos[0], 0.45, pos[1]);
     group.add(wheel);
   });
   
@@ -249,30 +291,46 @@ function createTruck(color = 0x5555ff) {
 function createLorry(color = 0xffaa00) {
   const group = new THREE.Group();
   
-  // Cabin
+  // Cabin (Euro truck style)
   const cabin = new THREE.Mesh(
-    new THREE.BoxGeometry(2.2, 1.8, 1.8),
+    new THREE.BoxGeometry(2.4, 2.5, 2.0),
     new THREE.MeshStandardMaterial({ color, roughness: 0.5 })
   );
-  cabin.position.set(0, 0.9, 2.5);
+  cabin.position.set(0, 1.5, 3.0);
   group.add(cabin);
+  
+  // Windshield
+  const windshield = new THREE.Mesh(
+    new THREE.BoxGeometry(2.2, 1.0, 0.1),
+    new THREE.MeshStandardMaterial({ color: 0x111111 })
+  );
+  windshield.position.set(0, 2.0, 4.0);
+  group.add(windshield);
   
   // Trailer
   const trailer = new THREE.Mesh(
-    new THREE.BoxGeometry(2.3, 2.0, 6.0),
-    new THREE.MeshStandardMaterial({ color: 0x333333, roughness: 0.8 })
+    new THREE.BoxGeometry(2.5, 2.8, 8.0),
+    new THREE.MeshStandardMaterial({ color: 0xeeeeee, roughness: 0.8 })
   );
-  trailer.position.set(0, 1.0, -1.5);
+  trailer.position.set(0, 1.7, -2.0);
   group.add(trailer);
   
+  // Side skirts
+  const skirt = new THREE.Mesh(
+    new THREE.BoxGeometry(2.5, 0.8, 4.0),
+    new THREE.MeshStandardMaterial({ color: 0x333333 })
+  );
+  skirt.position.set(0, 0.6, 3.0);
+  group.add(skirt);
+
   // Wheels (8 wheels)
-  const wheelGeo = new THREE.CylinderGeometry(0.45, 0.45, 0.3, 8);
+  const wheelGeo = new THREE.CylinderGeometry(0.5, 0.5, 0.4, 16);
   const wheelMat = new THREE.MeshStandardMaterial({ color: 0x1a1a1a });
   
-  [[1.0, 2.5], [-1.0, 2.5], [1.0, 0], [-1.0, 0], [1.0, -2.0], [-1.0, -2.0], [1.0, -4.0], [-1.0, -4.0]].forEach(pos => {
+  [[1.1, 3.0], [-1.1, 3.0], [1.1, -1.0], [-1.1, -1.0], [1.1, -3.0], [-1.1, -3.0], [1.1, -5.0], [-1.1, -5.0]].forEach(pos => {
     const wheel = new THREE.Mesh(wheelGeo, wheelMat);
     wheel.rotation.z = Math.PI / 2;
-    wheel.position.set(pos[0], 0.45, pos[1]);
+    wheel.position.set(pos[0], 0.5, pos[1]);
     group.add(wheel);
   });
   
@@ -297,6 +355,17 @@ function createRamp() {
   const group = new THREE.Group();
   
   // Ramp geometry
+ // Ground (Grass)
+const groundGeo = new THREE.PlaneGeometry(2000, 2000);
+const groundMat = new THREE.MeshStandardMaterial({ 
+  color: 0x1a472a, // Dark green grass
+  roughness: 1.0,
+  metalness: 0.0
+});
+const ground = new THREE.Mesh(groundGeo, groundMat);
+ground.rotation.x = -Math.PI / 2;
+ground.position.y = -0.1; // Slightly below road
+scene.add(ground);
   const rampGeo = new THREE.BoxGeometry(8, 0.5, 12);
   const rampMat = new THREE.MeshStandardMaterial({ 
     color: 0x666666,
@@ -357,11 +426,94 @@ const assistState = {
   autoStartCooldown: 0,
 };
 
+function flashSnark(text) {
+  const el = document.querySelector("#floating-snark");
+  if (el) {
+    el.textContent = text;
+    el.classList.add("visible");
+    
+    // Reset timer to hide
+    if (el.hideTimer) clearTimeout(el.hideTimer);
+    el.hideTimer = setTimeout(() => {
+      el.classList.remove("visible");
+    }, 3000);
+  }
+}
+
+function updateUI(delta) {
+  const speedKmh = Math.abs(state.velocity.z) * 3.6; // approx
+  
+  // Update new text HUD
+  const hudRpm = document.querySelector("#hud-rpm");
+  const hudSpeed = document.querySelector("#hud-speed");
+  const hudGear = document.querySelector("#hud-gear");
+  
+  if (hudRpm) hudRpm.textContent = Math.floor(state.rpm);
+  if (hudSpeed) hudSpeed.textContent = Math.floor(speedKmh);
+  if (hudGear) {
+    let gearLabel = "N";
+    if (state.gear > 0) gearLabel = state.gear.toString();
+    if (state.gear < 0) gearLabel = "R";
+    hudGear.textContent = gearLabel;
+  }
+
+  // Update floating snark position
+  const snarkEl = document.querySelector("#floating-snark");
+  if (snarkEl && snarkEl.classList.contains("visible")) {
+    // Project player position to screen
+    const pos = player.position.clone();
+    pos.y += 2.5; // Above car
+    pos.project(camera);
+    
+    const x = (pos.x * .5 + .5) * window.innerWidth;
+    const y = (-(pos.y * .5) + .5) * window.innerHeight;
+    
+    snarkEl.style.left = `${x}px`;
+    snarkEl.style.top = `${y}px`;
+    snarkEl.style.transform = `translate(-50%, -100%)`; // Center above point
+  }
+
+  // Update existing UI elements using the global 'ui' object
+  if (ui.gear) {
+    let gearLabel = "N";
+    if (state.gear > 0) gearLabel = state.gear.toString();
+    if (state.gear < 0) gearLabel = "R";
+    ui.gear.textContent = gearLabel;
+    ui.rpm.textContent = Math.floor(state.rpm);
+    ui.speed.textContent = Math.floor(speedKmh);
+    
+    // Note: We removed the old text-based gear note in favor of the floating snark
+    // The 'gearNote' element reference is still there but might not be used for text content anymore.
+  }
+
+  // Update Score
+  if (state.engineOn && Math.abs(state.velocity.z) > 0.1) {
+    state.score += Math.abs(state.velocity.z) * delta * 0.1; // Distance score
+    if (inputState.drift) {
+      state.score += Math.abs(state.velocity.z) * delta * 0.5; // Drift bonus
+    }
+  }
+  
+  const scoreEl = document.querySelector("#score-value");
+  const beerEl = document.querySelector("#beer-value");
+  if (scoreEl) scoreEl.textContent = Math.floor(state.score).toLocaleString();
+  if (beerEl) beerEl.textContent = state.beersCollected;
+
+  if (instructionState.timer > 0) {
+    instructionState.timer = Math.max(0, instructionState.timer - delta);
+  }
+  const instructionText =
+    instructionState.timer > 0
+      ? instructionState.override
+      : determineInstruction(speedKmh);
+  setInstruction(instructionText);
+}
+
 const ui = {
   gear: document.querySelector("#gear-label"),
   rpm: document.querySelector("#rpm-label"),
   speed: document.querySelector("#speed-label"),
-  snark: document.querySelector("#snark"),
+  // snark: document.querySelector("#snark"), // Removed
   rpmBar: document.querySelector("#rpm-progress"),
   gearBar: document.querySelector("#gear-progress"),
   rpmBadge: document.querySelector("#rpm-readout"),
@@ -374,114 +526,11 @@ const ui = {
   gearNote: document.querySelector("#gear-note"),
 };
 
-// Visual Gauges Setup
-const rpmGaugeCanvas = document.getElementById('rpm-gauge');
-const speedGaugeCanvas = document.getElementById('speed-gauge');
-const rpmCtx = rpmGaugeCanvas.getContext('2d');
-const speedCtx = speedGaugeCanvas.getContext('2d');
+// Removed old gauge canvas references - we now use text-based HUD
+// drawGauge function removed - no longer needed
 
-function drawGauge(ctx, value, maxValue, label, redZoneStart = null) {
-  const centerX = 100;
-  const centerY = 100;
-  const radius = 85;
-  
-  // Clear canvas
-  ctx.clearRect(0, 0, 200, 200);
-  
-  // Draw outer ring
-  ctx.beginPath();
-  ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
-  ctx.strokeStyle = '#333';
-  ctx.lineWidth = 8;
-  ctx.stroke();
-  
-  // Draw inner circle
-  ctx.beginPath();
-  ctx.arc(centerX, centerY, radius - 10, 0, Math.PI * 2);
-  ctx.strokeStyle = '#1a1a1a';
-  ctx.lineWidth = 2;
-  ctx.stroke();
-  
-  // Draw tick marks and numbers
-  const startAngle = Math.PI * 0.75; // Start at 7 o'clock
-  const endAngle = Math.PI * 2.25; // End at 5 o'clock
-  const angleRange = endAngle - startAngle;
-  
-  for (let i = 0; i <= 12; i++) {
-    const angle = startAngle + (angleRange * i / 12);
-    const tickLength = i % 3 === 0 ? 15 : 8;
-    const tickStart = radius - 15;
-    const tickEnd = tickStart - tickLength;
-    
-    // Draw tick
-    ctx.beginPath();
-    ctx.moveTo(
-      centerX + Math.cos(angle) * tickStart,
-      centerY + Math.sin(angle) * tickStart
-    );
-    ctx.lineTo(
-      centerX + Math.cos(angle) * tickEnd,
-      centerY + Math.sin(angle) * tickEnd
-    );
-    ctx.strokeStyle = '#ddd';
-    ctx.lineWidth = i % 3 === 0 ? 2 : 1;
-    ctx.stroke();
-    
-    // Draw numbers
-    if (i % 3 === 0) {
-      const numberRadius = radius - 30;
-      const numberValue = Math.round((maxValue / 12) * i);
-      ctx.fillStyle = (redZoneStart && numberValue >= redZoneStart) ? '#ff3333' : '#fff';
-      ctx.font = 'bold 14px Arial';
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'middle';
-      ctx.fillText(
-        numberValue,
-        centerX + Math.cos(angle) * numberRadius,
-        centerY + Math.sin(angle) * numberRadius
-      );
-    }
-  }
-  
-  // Draw red zone if specified
-  if (redZoneStart) {
-    const redStartAngle = startAngle + (angleRange * redZoneStart / maxValue);
-    ctx.beginPath();
-    ctx.arc(centerX, centerY, radius - 5, redStartAngle, endAngle);
-    ctx.strokeStyle = '#ff3333';
-    ctx.lineWidth = 10;
-    ctx.stroke();
-  }
-  
-  // Draw needle
-  const needleAngle = startAngle + (angleRange * Math.min(value, maxValue) / maxValue);
-  ctx.beginPath();
-  ctx.moveTo(centerX, centerY);
-  ctx.lineTo(
-    centerX + Math.cos(needleAngle) * (radius - 20),
-    centerY + Math.sin(needleAngle) * (radius - 20)
-  );
-  ctx.strokeStyle = '#ff1744';
-  ctx.lineWidth = 3;
-  ctx.stroke();
-  
-  // Draw center cap
-  ctx.beginPath();
-  ctx.arc(centerX, centerY, 8, 0, Math.PI * 2);
-  ctx.fillStyle = '#333';
-  ctx.fill();
-  ctx.strokeStyle = '#ff1744';
-  ctx.lineWidth = 2;
-  ctx.stroke();
-  
-  // Draw label
-  ctx.fillStyle = '#aaa';
-  ctx.font = '12px Arial';
-  ctx.textAlign = 'center';
-  ctx.fillText(label, centerX, centerY + 50);
-}
 
-ui.snark.textContent = START_TIP;
+flashSnark(START_TIP);
 setInstruction(START_TIP);
 flashInstruction(START_TIP, 4);
 
@@ -581,10 +630,7 @@ function triggerShiftLag() {
   flashSnark();
 }
 
-function flashSnark(forceLine) {
-  snarkIndex = (snarkIndex + 1) % SNARK_LINES.length;
-  ui.snark.textContent = forceLine || SNARK_LINES[snarkIndex];
-}
+
 
 function setInstruction(text) {
   if (ui.instruction) {
@@ -657,6 +703,8 @@ const lanes = [-5.4, -1.8, 1.8, 5.4];
 const ramps = [];
 let treeTimer = 0;
 let buildingTimer = 0;
+let lampTimer = 0;
+let houseTimer = 0;
 let rampTimer = 0;
 
 function spawnTraffic() {
@@ -773,9 +821,11 @@ function spawnBeer() {
   beers.push(beer);
 }
 
-// InstancedMesh Setup
-const MAX_TREES = 1000;
-const MAX_BUILDINGS = 500;
+// InstancedMesh Setup (Reduced for performance)
+const MAX_TREES = 300; // Was 1000
+const MAX_BUILDINGS = 150; // Was 500
+const MAX_LAMPS = 100; // Was 400
+const MAX_HOUSES = 100; // Was 400
 
 // Tree Geometry & Material
 const treeTrunkGeo = new THREE.CylinderGeometry(0.3, 0.4, 3, 8);
@@ -790,18 +840,72 @@ treeCrownsMesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
 scene.add(treeTrunksMesh);
 scene.add(treeCrownsMesh);
 
-// Building Geometry & Material
-const buildingGeo = new THREE.BoxGeometry(1, 1, 1);
-const buildingMat = new THREE.MeshStandardMaterial({ roughness: 0.9 });
-const buildingsMesh = new THREE.InstancedMesh(buildingGeo, buildingMat, MAX_BUILDINGS);
+// Panelák (High-rise) Geometry & Material
+// Create a complex geometry for Panelák
+const panelakGeo = new THREE.BoxGeometry(1, 1, 1);
+const panelakMat = new THREE.MeshStandardMaterial({ 
+  color: 0xaaaaaa, 
+  roughness: 0.9,
+  flatShading: true
+});
+
+// Add window details via texture or geometry? 
+// For performance with InstancedMesh, geometry is best if simple.
+// Let's stick to BoxGeometry but scale it to look like tall slabs.
+// We can add a second InstancedMesh for "balconies" if we want extreme detail,
+// but for now let's make them tall and grey.
+
+const buildingsMesh = new THREE.InstancedMesh(panelakGeo, panelakMat, MAX_BUILDINGS);
 buildingsMesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
 buildingsMesh.instanceColor = new THREE.InstancedBufferAttribute(new Float32Array(MAX_BUILDINGS * 3), 3);
 buildingsMesh.instanceColor.setUsage(THREE.DynamicDrawUsage);
 scene.add(buildingsMesh);
 
+// Street Lamp Geometry & Material
+const lampPostGeo = new THREE.CylinderGeometry(0.1, 0.15, 6, 6);
+const lampPostMat = new THREE.MeshStandardMaterial({ color: 0x222222, metalness: 0.6 });
+const lampHeadGeo = new THREE.BoxGeometry(0.8, 0.2, 0.4);
+const lampHeadMat = new THREE.MeshStandardMaterial({ color: 0xeeeeee, emissive: 0xffffee, emissiveIntensity: 1.0 });
+
+const lampPostsMesh = new THREE.InstancedMesh(lampPostGeo, lampPostMat, MAX_LAMPS);
+const lampHeadsMesh = new THREE.InstancedMesh(lampHeadGeo, lampHeadMat, MAX_LAMPS);
+lampPostsMesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
+lampHeadsMesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
+scene.add(lampPostsMesh);
+scene.add(lampHeadsMesh);
+
+// House (Rodinný dům) Geometry & Material
+const houseBodyGeo = new THREE.BoxGeometry(1, 1, 1);
+const houseBodyMat = new THREE.MeshStandardMaterial({ roughness: 0.8 }); // Colors will vary
+const houseRoofGeo = new THREE.ConeGeometry(0.9, 0.6, 4); // Pyramidal roof
+const houseRoofMat = new THREE.MeshStandardMaterial({ color: 0x8b4513, roughness: 0.9 });
+
+const housesBodyMesh = new THREE.InstancedMesh(houseBodyGeo, houseBodyMat, MAX_HOUSES);
+const housesRoofMesh = new THREE.InstancedMesh(houseRoofGeo, houseRoofMat, MAX_HOUSES);
+housesBodyMesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
+housesBodyMesh.instanceColor = new THREE.InstancedBufferAttribute(new Float32Array(MAX_HOUSES * 3), 3);
+housesRoofMesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
+scene.add(housesBodyMesh);
+scene.add(housesRoofMesh);
+
+// House Details (Garden & Path)
+const gardenGeo = new THREE.PlaneGeometry(1, 1);
+const gardenMat = new THREE.MeshStandardMaterial({ color: 0x2d5a27 }); // Slightly different green
+const pathGeo = new THREE.PlaneGeometry(1, 1);
+const pathMat = new THREE.MeshStandardMaterial({ color: 0x888888 }); // Concrete path
+
+const gardensMesh = new THREE.InstancedMesh(gardenGeo, gardenMat, MAX_HOUSES);
+const pathsMesh = new THREE.InstancedMesh(pathGeo, pathMat, MAX_HOUSES);
+gardensMesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
+pathsMesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
+scene.add(gardensMesh);
+scene.add(pathsMesh);
+
 // Instance Management
 let treeIndex = 0;
 let buildingIndex = 0;
+let lampIndex = 0;
+let houseIndex = 0;
 const dummy = new THREE.Object3D();
 const buildingColors = [
   new THREE.Color(0x8b7355),
@@ -809,11 +913,17 @@ const buildingColors = [
   new THREE.Color(0xd4a574),
   new THREE.Color(0xb85450),
 ];
+const houseColors = [
+  new THREE.Color(0xffeebb),
+  new THREE.Color(0xccffcc),
+  new THREE.Color(0xffcccc),
+  new THREE.Color(0xeeeeff),
+];
 
 function spawnTree() {
   const side = Math.random() > 0.5 ? 1 : -1;
-  const x = side * (18 + Math.random() * 8);
-  const z = player.position.z - 120 - Math.random() * 80;
+  const x = side * (18 + Math.random() * 12); // Along roadside
+  const z = player.position.z - 100 - Math.random() * 80; // Much wider z-spread
   
   // Trunk
   dummy.position.set(x, 1.5, z);
@@ -822,19 +932,10 @@ function spawnTree() {
   dummy.updateMatrix();
   treeTrunksMesh.setMatrixAt(treeIndex, dummy.matrix);
   
-  // Crown 1
+  // Crown
   dummy.position.set(x, 4, z);
   dummy.updateMatrix();
   treeCrownsMesh.setMatrixAt(treeIndex, dummy.matrix);
-  
-  // Note: We are using one index for both trunk and crown parts for simplicity, 
-  // effectively assuming 1:1 mapping. If we wanted multi-part crowns, we'd need more logic.
-  // For the second crown part, we can't easily use the same index unless we double the count 
-  // or use a separate mesh. For optimization, let's stick to one crown part or 
-  // just map the second part to the same index in a SECOND crown mesh if needed.
-  // Actually, let's just make the tree simple: 1 Trunk + 1 Crown for max performance.
-  // Or we can add a second crown mesh "treeCrownsMesh2" if we really want the double-cone look.
-  // Let's stick to single crown for now to keep it clean and fast.
   
   treeTrunksMesh.instanceMatrix.needsUpdate = true;
   treeCrownsMesh.instanceMatrix.needsUpdate = true;
@@ -844,20 +945,31 @@ function spawnTree() {
 
 function spawnBuilding() {
   const side = Math.random() > 0.5 ? 1 : -1;
-  const width = 4 + Math.random() * 3;
-  const height = 8 + Math.random() * 6;
-  const depth = 3 + Math.random() * 2;
+  const width = 12 + Math.random() * 8; // Wide
+  const height = 20 + Math.random() * 15; // Tall (Panelák)
+  const depth = 8 + Math.random() * 4;
   
-  const x = side * (25 + Math.random() * 15);
-  const z = player.position.z - 150 - Math.random() * 100;
+  const x = side * (45 + Math.random() * 20); // Further back
+  const z = player.position.z - 200 - Math.random() * 100;
   
   dummy.position.set(x, height / 2, z);
-  dummy.rotation.set(0, side > 0 ? Math.PI / 2 : -Math.PI / 2, 0);
+  // Paneláky are usually aligned with the street or perpendicular
+  const rotation = Math.random() > 0.7 ? Math.PI / 2 : 0; 
+  dummy.rotation.set(0, rotation, 0);
   dummy.scale.set(width, height, depth);
   dummy.updateMatrix();
   
   buildingsMesh.setMatrixAt(buildingIndex, dummy.matrix);
-  buildingsMesh.setColorAt(buildingIndex, buildingColors[Math.floor(Math.random() * buildingColors.length)]);
+  
+  // Concrete colors
+  const greyVal = 0.5 + Math.random() * 0.3;
+  const color = new THREE.Color(greyVal, greyVal, greyVal);
+  // Occasional colorful panelák (renovated)
+  if (Math.random() < 0.3) {
+    color.setHSL(Math.random(), 0.4, 0.6);
+  }
+  
+  buildingsMesh.setColorAt(buildingIndex, color);
   
   buildingsMesh.instanceMatrix.needsUpdate = true;
   buildingsMesh.instanceColor.needsUpdate = true;
@@ -865,15 +977,135 @@ function spawnBuilding() {
   buildingIndex = (buildingIndex + 1) % MAX_BUILDINGS;
 }
 
+function spawnLamp() {
+  const side = Math.random() > 0.5 ? 1 : -1;
+  const x = side * 12; // Closer to road
+  const z = player.position.z - 150 - Math.random() * 60; // Much wider z-spread
+  
+  // Post
+  dummy.position.set(x, 3, z);
+  dummy.rotation.set(0, 0, 0);
+  dummy.scale.set(1, 1, 1);
+  dummy.updateMatrix();
+  lampPostsMesh.setMatrixAt(lampIndex, dummy.matrix);
+  
+  // Head
+  dummy.position.set(x - side * 0.5, 5.8, z); // Overhang road slightly
+  dummy.rotation.set(0, 0, 0);
+  dummy.scale.set(1, 1, 1);
+  dummy.updateMatrix();
+  lampHeadsMesh.setMatrixAt(lampIndex, dummy.matrix);
+  
+  lampPostsMesh.instanceMatrix.needsUpdate = true;
+  lampHeadsMesh.instanceMatrix.needsUpdate = true;
+  
+  lampIndex = (lampIndex + 1) % MAX_LAMPS;
+}
+
+function spawnHouse() {
+  const side = Math.random() > 0.5 ? 1 : -1;
+  const width = 5 + Math.random() * 2;
+  const height = 3.5 + Math.random() * 1.5;
+  const depth = 5 + Math.random() * 2;
+  
+  const x = side * (22 + Math.random() * 5); // Between road and paneláks
+  const z = player.position.z - 150 - Math.random() * 100; // Wider z-spread
+  
+  // Body
+  dummy.position.set(x, height / 2, z);
+  dummy.rotation.set(0, 0, 0); // Align with road
+  dummy.scale.set(width, height, depth);
+  dummy.updateMatrix();
+  housesBodyMesh.setMatrixAt(houseIndex, dummy.matrix);
+  housesBodyMesh.setColorAt(houseIndex, houseColors[Math.floor(Math.random() * houseColors.length)]);
+  
+  // Roof
+  dummy.position.set(x, height + 1.5, z);
+  dummy.rotation.set(0, Math.PI / 4, 0); // Rotate 45deg for pyramid look
+  dummy.scale.set(width * 0.8, 3, depth * 0.8);
+  dummy.updateMatrix();
+  housesRoofMesh.setMatrixAt(houseIndex, dummy.matrix);
+  
+  // Garden (Front yard)
+  dummy.position.set(x, 0.05, z + (depth/2 + 2)); // In front of house? No, z is forward. 
+  // Road is at x=0. House is at x=22. Front of house faces road (x=0).
+  // So garden should be between house and road.
+  // If side=1 (right), house at x=22. Garden at x=15.
+  // If side=-1 (left), house at x=-22. Garden at x=-15.
+  
+  const gardenX = x - (side * (width/2 + 3));
+  dummy.position.set(gardenX, 0.02, z);
+  dummy.rotation.set(-Math.PI/2, 0, 0);
+  dummy.scale.set(6, depth + 4, 1);
+  dummy.updateMatrix();
+  gardensMesh.setMatrixAt(houseIndex, dummy.matrix);
+  
+  // Path (to door)
+  dummy.position.set(gardenX, 0.03, z);
+  dummy.rotation.set(-Math.PI/2, 0, 0);
+  dummy.scale.set(7, 1.5, 1); // Path leading to road
+  dummy.updateMatrix();
+  pathsMesh.setMatrixAt(houseIndex, dummy.matrix);
+  
+  housesBodyMesh.instanceMatrix.needsUpdate = true;
+  housesBodyMesh.instanceColor.needsUpdate = true;
+  housesRoofMesh.instanceMatrix.needsUpdate = true;
+  gardensMesh.instanceMatrix.needsUpdate = true;
+  pathsMesh.instanceMatrix.needsUpdate = true;
+  
+  houseIndex = (houseIndex + 1) % MAX_HOUSES;
+}
+
 function spawnRamp() {
-  const ramp = createRamp();
-  ramp.position.set(
-    0, // Center of road
+  const type = Math.random();
+  let scale = 1;
+  let color = 0x666666;
+  
+  if (type < 0.5) {
+    // Small Ramp
+    scale = 0.8;
+  } else if (type < 0.8) {
+    // Medium Ramp
+    scale = 1.2;
+    color = 0x884444;
+  } else {
+    // Mega Jump
+    scale = 1.8;
+    color = 0xff0000;
+  }
+
+  const group = new THREE.Group();
+  
+  // Ramp geometry
+  const rampGeo = new THREE.BoxGeometry(8 * scale, 0.5 * scale, 12 * scale);
+  const rampMat = new THREE.MeshStandardMaterial({ 
+    color: color,
+    roughness: 0.8
+  });
+  const ramp = new THREE.Mesh(rampGeo, rampMat);
+  ramp.position.y = 0.25 * scale;
+  ramp.rotation.x = -0.3; // Slight angle for ramp
+  group.add(ramp);
+  
+  // Warning stripes
+  const stripeGeo = new THREE.BoxGeometry(8.1 * scale, 0.1 * scale, 1 * scale);
+  const stripeMat = new THREE.MeshBasicMaterial({ color: 0xffdd00 });
+  
+  for (let i = 0; i < 3; i++) {
+    const stripe = new THREE.Mesh(stripeGeo, stripeMat);
+    stripe.position.set(0, 0.8 * scale, (-4 + i * 4) * scale);
+    stripe.rotation.x = -0.3;
+    group.add(stripe);
+  }
+  
+  group.position.set(
+    0, 
     0,
     player.position.z - 180 - Math.random() * 60
   );
-  scene.add(ramp);
-  ramps.push(ramp);
+  
+  scene.add(group);
+  ramps.push(group);
 }
 
 function removeEntity(array, mesh) {
@@ -907,11 +1139,15 @@ function removeEntity(array, mesh) {
   }
 }
 
+
+
 function updateTraffic(dt) {
   trafficTimer -= dt;
   obstacleTimer -= dt;
   treeTimer -= dt;
   buildingTimer -= dt;
+  lampTimer -= dt;
+  houseTimer -= dt;
   rampTimer -= dt;
   potholeTimer -= dt;
   beerTimer -= dt;
@@ -924,18 +1160,27 @@ function updateTraffic(dt) {
     spawnObstacle();
     obstacleTimer = 2.8 + Math.random() * 1.5;
   }
-  if (treeTimer <= 0) {
+  if (treeTimer <=  0) {
     spawnTree();
-    spawnTree(); // Two trees at once (both sides potentially)
-    treeTimer = 0.8 + Math.random() * 0.7;
+    spawnTree();
+    treeTimer = 3.0 + Math.random() * 2.0; // Much more spacing between tree pairs
   }
   if (buildingTimer <= 0) {
     spawnBuilding();
-    buildingTimer = 3.5 + Math.random() * 3;
+    buildingTimer = 8.0 + Math.random() * 6; // Spread out paneláky
+  }
+  if (lampTimer <= 0) {
+    spawnLamp();
+    spawnLamp(); // Both sides
+    lampTimer = 8.0 + Math.random() * 4.0; // Much wider spacing between lamp posts
+  }
+  if (houseTimer <= 0) {
+    spawnHouse();
+    houseTimer = 6.0 + Math.random() * 4; // More space between houses
   }
   if (rampTimer <= 0) {
     spawnRamp();
-    rampTimer = 12 + Math.random() * 8;
+    rampTimer = 15 + Math.random() * 10; // Slightly more spread
   }
   if (potholeTimer <= 0) {
     spawnPothole();
@@ -1073,7 +1318,31 @@ function aabbIntersect(a, b) {
 function crash(mesh, label) {
   state.velocity.multiplyScalar(0.2);
   flashSnark(`Au! ${label} ti právě připomněl realitu.`);
-  mesh.material.color.setHex(0xffffff * Math.random());
+  
+  // Helper to change color
+  const changeColor = (mat) => {
+    if (mat && mat.color) {
+      mat.color.setHex(0xffffff * Math.random());
+    }
+  };
+
+  if (mesh.traverse) {
+    mesh.traverse((child) => {
+      if (child.material) {
+        if (Array.isArray(child.material)) {
+          child.material.forEach(changeColor);
+        } else {
+          changeColor(child.material);
+        }
+      }
+    });
+  } else if (mesh.material) {
+    if (Array.isArray(mesh.material)) {
+      mesh.material.forEach(changeColor);
+    } else {
+      changeColor(mesh.material);
+    }
+  }
 }
 
 function updatePlayer(delta) {
@@ -1228,80 +1497,8 @@ function updateCamera(delta) {
   camera.lookAt(player.position.clone().add(new THREE.Vector3(0, 1.2, -2)));
 }
 
-function updateUI(delta) {
-  const speedKmh = Math.abs(state.velocity.length() * 36);
-  const gearLabel = !state.engineOn
-    ? "OFF"
-    : state.gear === 0
-    ? "N"
-    : state.gear > 0
-    ? `${state.gear}`
-    : "R";
-  ui.gear.textContent = gearLabel;
-  ui.rpm.textContent = state.engineOn
-    ? `${Math.round(state.rpm)} rpm`
-    : "0 rpm (motor off)";
-  ui.speed.textContent = `${Math.round(speedKmh)} km/h`;
 
-  const rpmPercent = state.engineOn ? Math.min(1, state.rpm / MAX_RPM) : 0;
-  if (ui.rpmBar) {
-    ui.rpmBar.style.width = `${Math.round(rpmPercent * 100)}%`;
-  }
-  if (ui.rpmBadge) {
-    ui.rpmBadge.textContent = `${Math.round(rpmPercent * 100)}%`;
-  }
 
-  const gearProgress = THREE.MathUtils.clamp(
-    (state.gear + 1) / (GEAR_RATIOS.length + 1),
-    0,
-    1
-  );
-  if (ui.gearBar) {
-    ui.gearBar.style.width = `${Math.round(gearProgress * 100)}%`;
-  }
-  if (ui.gearBadge) {
-    ui.gearBadge.textContent = gearLabel;
-  }
-  if (ui.rpmValue) {
-    const rpmDisplay = state.engineOn ? Math.round(state.rpm) : 0;
-    ui.rpmValue.textContent = `${rpmDisplay} rpm`;
-  }
-  if (ui.rpmNote) {
-    ui.rpmNote.textContent = describeRpm(rpmPercent, state.engineOn);
-  }
-  if (ui.gearValue) {
-    ui.gearValue.textContent = gearLabel;
-  }
-  if (ui.gearNote) {
-    ui.gearNote.textContent = describeGear(gearLabel, speedKmh, state.engineOn);
-  }
-
-  // Update Score
-  if (state.engineOn && Math.abs(state.velocity.z) > 0.1) {
-    state.score += Math.abs(state.velocity.z) * delta * 0.1; // Distance score
-    if (inputState.drift) {
-      state.score += Math.abs(state.velocity.z) * delta * 0.5; // Drift bonus
-    }
-  }
-  
-  const scoreEl = document.querySelector("#score-value");
-  const beerEl = document.querySelector("#beer-value");
-  if (scoreEl) scoreEl.textContent = Math.floor(state.score).toLocaleString();
-  if (beerEl) beerEl.textContent = state.beersCollected;
-
-  if (instructionState.timer > 0) {
-    instructionState.timer = Math.max(0, instructionState.timer - delta);
-  }
-  const instructionText =
-    instructionState.timer > 0
-      ? instructionState.override
-      : determineInstruction(speedKmh);
-  setInstruction(instructionText);
-  
-  // Update visual gauges
-  drawGauge(rpmCtx, state.rpm, MAX_RPM, '', MAX_RPM * 0.85); // Red zone at 85%
-  drawGauge(speedCtx, speedKmh, 240, '', null); // Max 240 km/h
-}
 
 function determineInstruction(speedKmh) {
   if (!state.engineOn) {

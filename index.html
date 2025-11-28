@@ -9,111 +9,40 @@
 </head>
 
 <body>
-    <div id="ui">
-        <header>
-            <h1>Not Driving School (Definitely Certified Web Edition)</h1>
-            <p>Řaď ručně, driftuj drze a ignoruj pravidla silničního provozu přímo v prohlížeči.</p>
-        </header>
-        <section id="status-panel">
-            <!-- Visual Gauges -->
-            <div id="gauges-container">
-                <div class="gauge-wrapper">
-                    <canvas id="rpm-gauge" width="200" height="200"></canvas>
-                    <div class="gauge-label">RPM (x1000)</div>
-                </div>
-                <div class="gauge-wrapper">
-                    <canvas id="speed-gauge" width="200" height="200"></canvas>
-                    <div class="gauge-label">Speed (km/h)</div>
-                </div>
-            </div>
-            <p><span id="gear-label">N</span> | <span id="rpm-label">0 rpm</span> | <span id="speed-label">0 km/h</span>
-            </p>
-
-            <!-- Score Panel -->
-            <div id="score-panel">
-                <div class="score-row">
-                    <span>SKÓRE</span>
-                    <span id="score-value">0</span>
-                </div>
-                <div class="score-row">
-                    <span>PIVA</span>
-                    <span id="beer-value">0</span>
-                </div>
-            </div>
-
-            <p id="snark">Tip: Pokud trefíš protijedoucí auto, řekni že to byl sociální experiment.</p>
-            <div id="hud-dials">
-                <div class="dial-card" id="rpm-card">
-                    <div class="dial-heading">
-                        <span>Otáčky</span>
-                        <span id="rpm-readout">0%</span>
-                    </div>
-                    <p id="rpm-value" class="dial-value">0 rpm</p>
-                    <p id="rpm-note" class="dial-note">motor spí</p>
-                    <div class="meter-bar">
-                        <div id="rpm-progress" class="meter-fill"></div>
-                    </div>
-                </div>
-                <div class="dial-card" id="gear-card">
-                    <div class="dial-heading">
-                        <span>Kvalt</span>
-                        <span id="gear-readout">N</span>
-                    </div>
-                    <p id="gear-value" class="dial-value">N</p>
-                    <p id="gear-note" class="dial-note">klid před jízdou</p>
-                    <div class="meter-bar">
-                        <div id="gear-progress" class="meter-fill meter-fill--gear"></div>
-                    </div>
-                </div>
-            </div>
-            <div id="instruction-card">
-                <p id="instruction-text">Start: drž C (spojka) a zmáčkni F. Pak přes Q/E zařaď a pomalu pusť C.</p>
-                <small>Tipy se mění podle situace.</small>
-            </div>
-            <div id="control-strip">
-                <span><kbd>W</kbd> Plyn</span>
-                <span><kbd>S</kbd> Brzda</span>
-                <span><kbd>A</kbd>/<kbd>D</kbd> Řízení</span>
-                <span><kbd>C</kbd> Spojka</span>
-                <span><kbd>Q</kbd>/<kbd>E</kbd> Řazení</span>
-                <span><kbd>F</kbd> Start/Stop</span>
-                <span><kbd>Shift</kbd> Drift</span>
-                <span><kbd>Space</kbd> Ruční brzda</span>
-            </div>
-        </section>
-        <section id="controls">
-            <h2>Ovládání</h2>
-            <ul>
-                <li>W / Šipka nahoru – plyn</li>
-                <li>S / Šipka dolů – brzda</li>
-                <li>A / D – řízení</li>
-                <li>Q / E – řazení dolů / nahoru (jen se sešlápnutou spojkou C)</li>
-                <li>C – spojka (drž při startu a řazení)</li>
-                <li>F – start/stop motoru</li>
-                <li>Levá Shift – drift mód</li>
-                <li>Mezerník – ruční brzda „panická“</li>
-            </ul>
-            <p id="howto"><strong>Startovací rituál:</strong> drž C, zmáčkni F, zařaď Q/E, lehce přidej plyn a pomalu
-                pouštěj C. Když motor chcípne, klid – prostě to zopakuj.</p>
-        </section>
-    </div>
     <canvas id="game"></canvas>
 
-    <!-- Gauges overlay -->
-    <div id="status-panel">
-        <div id="gauges-container">
-            <div class="gauge-wrapper">
-                <canvas id="rpm-gauge" width="200" height="200"></canvas>
-                <div class="gauge-label">RPM x1000</div>
-            </div>
-            <div class="gauge-wrapper">
-                <canvas id="speed-gauge" width="200" height="200"></canvas>
-                <div class="gauge-label">Rychlost km/h</div>
-            </div>
+    <!-- Score Panel (Top Right) -->
+    <div id="score-panel">
+        <div class="score-item">
+            <span class="score-label">SKÓRE:</span>
+            <span id="score-value">0</span>
+        </div>
+        <div class="score-item">
+            <span class="score-label">🍺:</span>
+            <span id="beer-value">0</span>
         </div>
     </div>
 
-    <!-- Controls legend - bottom left -->
+    <!-- Floating Snark (Above Car) -->
+    <div id="floating-snark"></div>
+
+    <!-- Telemetry HUD (Bottom Left) -->
+    <div id="telemetry-hud">
+        <div class="telemetry-item">
+            <span class="telemetry-label">RPM</span>
+            <span class="telemetry-value" id="hud-rpm">0</span>
+        </div>
+        <div class="telemetry-item">
+            <span class="telemetry-label">KM/H</span>
+            <span class="telemetry-value" id="hud-speed">0</span>
+        </div>
+        <div class="telemetry-item">
+            <span class="telemetry-label">PŘEVODOVKA</span>
+            <span class="telemetry-value" id="hud-gear">N</span>
+        </div>
+    </div>
+
+    <!-- Controls legend (Bottom Right) -->
     <div id="controls-legend">
         <div><strong>Ovládání:</strong></div>
         <div>W — plyn | S — brzda</div>
@@ -124,19 +53,6 @@
         <div>Shift — drift | Space — ručka</div>
     </div>
 
-    <div id="floating-hints">
-        <p id="floating-instruction">
-            Start: drž C (spojka) a zmáčkni F. Pak přes Q/E zařaď a pomalu pusť C.
-        </p>
-        <div id="floating-controls">
-            <span><kbd>W</kbd> plyn</span>
-            <span><kbd>S</kbd> brzda</span>
-            <span><kbd>A</kbd>/<kbd>D</kbd> řízení</span>
-            <span><kbd>C</kbd> spojka</span>
-            <span><kbd>Q</kbd>/<kbd>E</kbd> kvalt</span>
-            <span><kbd>F</kbd> start</span>
-        </div>
-    </div>
     <script type="module" src="main.js"></script>
 </body>
 
