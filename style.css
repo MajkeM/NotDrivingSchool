@@ -1,0 +1,422 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: "Space Grotesk", "Segoe UI", system-ui, sans-serif;
+  background: radial-gradient(circle at top, #191c24, #05060a 70%);
+  color: #f5f4f2;
+  overflow: hidden;
+}
+
+#ui {
+  display: none;
+  /* Hide the old UI section, we'll use canvas overlays */
+}
+
+#status-panel {
+  position: fixed;
+  top: 1rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+  pointer-events: none;
+}
+
+#game {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  display: block;
+  background: transparent;
+}
+
+#hud-top {
+  position: fixed;
+  top: 1rem;
+  left: 50%;
+  transform: translateX(-50%);
+  text-align: center;
+  width: min(600px, 90vw);
+  padding: 0.5rem 1rem;
+  background: rgba(7, 8, 13, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  backdrop-filter: blur(4px);
+  z-index: 10;
+}
+
+#hud-top h1 {
+  font-size: 1.1rem;
+  margin: 0;
+  opacity: 0.9;
+}
+
+#hud-top p {
+  margin: 0.2rem 0 0;
+  font-size: 0.85rem;
+}
+
+#score-panel {
+  position: fixed;
+  top: 1rem;
+  right: 2rem;
+  text-align: right;
+  font-family: "JetBrains Mono", monospace;
+  z-index: 20;
+}
+
+.score-row {
+  display: flex;
+  gap: 1rem;
+  justify-content: flex-end;
+  align-items: center;
+  margin-bottom: 0.5rem;
+  background: rgba(0, 0, 0, 0.6);
+  padding: 0.4rem 0.8rem;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(4px);
+}
+
+.score-row span:first-child {
+  color: #aaa;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.score-row span:last-child {
+  color: #ffca5f;
+  font-size: 1.4rem;
+  font-weight: 700;
+  text-shadow: 0 0 10px rgba(255, 202, 95, 0.4);
+}
+
+#beer-value {
+  color: #ffca5f;
+}
+
+#score-value {
+  color: #20e3ff;
+}
+
+@keyframes pulse {
+
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  50% {
+    opacity: 0.8;
+    transform: scale(1.02);
+  }
+}
+
+#gauges-container {
+  display: flex;
+  gap: 2rem;
+  justify-content: center;
+  margin: 1rem 0;
+  flex-wrap: wrap;
+}
+
+.gauge-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.gauge-wrapper canvas {
+  background: radial-gradient(circle, #1a1a1a, #0a0a0a);
+  border-radius: 50%;
+  box-shadow:
+    0 0 20px rgba(0, 0, 0, 0.8),
+    inset 0 0 20px rgba(0, 0, 0, 0.5);
+}
+
+.gauge-label {
+  font-size: 0.9rem;
+  color: #ff5555;
+  /* Czech red */
+  font-weight: 600;
+  text-transform: uppercase;
+  text-shadow: 0 0 8px rgba(255, 85, 85, 0.4);
+}
+
+#hud-left {
+  position: fixed;
+  bottom: 2rem;
+  left: 2rem;
+  width: 220px;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  z-index: 10;
+}
+
+#hud-right {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  width: 300px;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  z-index: 10;
+  align-items: flex-end;
+}
+
+#snark {
+  color: #ff5fad;
+  font-weight: 700;
+  font-size: 1.05rem;
+  text-shadow: 0 0 10px rgba(255, 95, 173, 0.5);
+}
+
+.dial-card {
+  padding: 0.8rem 1rem;
+  border-radius: 14px;
+  background: rgba(10, 11, 18, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.04), 0 10px 30px rgba(0, 0, 0, 0.5);
+}
+
+.dial-heading {
+  display: flex;
+  justify-content: space-between;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 0.75rem;
+  opacity: 0.8;
+}
+
+.dial-value {
+  margin: 0.2rem 0 0;
+  font-size: 2rem;
+  font-weight: 600;
+  font-family: "JetBrains Mono", "SFMono-Regular", Menlo, monospace;
+}
+
+.dial-note {
+  margin: 0.1rem 0 0.5rem;
+  font-size: 0.85rem;
+  color: #ffc3ff;
+}
+
+.meter-bar {
+  position: relative;
+  width: 100%;
+  height: 0.55rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+  overflow: hidden;
+}
+
+.meter-fill {
+  position: absolute;
+  inset: 0;
+  width: 0%;
+  background: linear-gradient(90deg, #ff5fad, #ffca5f);
+  border-radius: inherit;
+  transition: width 0.2s ease-out;
+}
+
+.meter-fill--gear {
+  background: linear-gradient(90deg, #33f4c5, #27aef3);
+}
+
+#status-mini {
+  background: rgba(7, 8, 13, 0.8);
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  font-family: "JetBrains Mono", monospace;
+  font-size: 1.1rem;
+  text-align: center;
+}
+
+#instruction-card {
+  padding: 0.75rem 0.85rem;
+  border-radius: 12px;
+  background: rgba(17, 19, 26, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.35);
+  font-family: "Space Grotesk", "Segoe UI", system-ui, sans-serif;
+  font-size: 0.95rem;
+  width: 100%;
+}
+
+#instruction-card small {
+  display: block;
+  margin-top: 0.4rem;
+  font-size: 0.7rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  opacity: 0.65;
+}
+
+#control-strip {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  font-size: 0.85rem;
+  opacity: 0.9;
+  background: rgba(7, 8, 13, 0.8);
+  padding: 1rem;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  width: 100%;
+}
+
+#control-strip span {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  justify-content: flex-end;
+}
+
+kbd {
+  padding: 0.1rem 0.45rem;
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.12);
+  font-size: 0.75rem;
+  font-family: "JetBrains Mono", "SFMono-Regular", Menlo, monospace;
+}
+
+#floating-hints {
+  display: none;
+  /* Hide old floating hints */
+}
+
+/* Controls legend - bottom left corner */
+#controls-legend {
+  position: fixed;
+  bottom: 1rem;
+  left: 1rem;
+  z-index: 15;
+  font-size: 0.7rem;
+  color: rgba(255, 255, 255, 0.85);
+  background: rgba(0, 0, 0, 0.4);
+  padding: 0.5rem 0.75rem;
+  border-radius: 6px;
+  backdrop-filter: blur(4px);
+  line-height: 1.4;
+  pointer-events: none;
+  font-family: "JetBrains Mono", monospace;
+}
+
+#controls-legend div {
+  margin: 0.15rem 0;
+}
+
+@media (max-width: 800px) {
+  #hud-left {
+    bottom: 1rem;
+    left: 1rem;
+    width: 160px;
+    transform: scale(0.9);
+    transform-origin: bottom left;
+  }
+
+  #hud-right {
+    bottom: 1rem;
+    right: 1rem;
+    width: 200px;
+    transform: scale(0.9);
+    transform-origin: bottom right;
+  }
+
+  .dial-value {
+    font-size: 1.5rem;
+  }
+}
+
+#stall-warning {
+  position: fixed;
+  bottom: 20%;
+  left: 50%;
+  transform: translateX(-50%);
+  color: #ff3333;
+  font-family: "Space Grotesk", sans-serif;
+  font-size: 3rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  text-shadow: 0 0 20px rgba(255, 0, 0, 0.6);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.2s ease-out;
+  z-index: 20;
+}
+
+#stall-warning.visible {
+  opacity: 1;
+  animation: pulse-red 0.5s infinite alternate;
+}
+
+@keyframes pulse-red {
+  from {
+    text-shadow: 0 0 20px rgba(255, 0, 0, 0.6);
+    transform: translateX(-50%) scale(1);
+  }
+
+  to {
+    text-shadow: 0 0 40px rgba(255, 0, 0, 0.9);
+    transform: translateX(-50%) scale(1.05);
+  }
+}
+
+/* Game Screens */
+.overlay-screen {
+  position: fixed;
+  inset: 0;
+  background: rgba(5, 6, 10, 0.95);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  backdrop-filter: blur(10px);
+}
+
+.overlay-screen h1 {
+  font-size: 3rem;
+  color: #20e3ff;
+  text-transform: uppercase;
+  margin-bottom: 1rem;
+  text-shadow: 0 0 20px rgba(32, 227, 255, 0.5);
+}
+
+.overlay-screen p {
+  font-size: 1.2rem;
+  color: #f5f4f2;
+  margin-bottom: 2rem;
+  opacity: 0.8;
+}
+
+.overlay-screen button {
+  padding: 1rem 3rem;
+  font-size: 1.5rem;
+  font-family: "Space Grotesk", sans-serif;
+  font-weight: 700;
+  color: #05060a;
+  background: #ff5fad;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-transform: uppercase;
+  box-shadow: 0 0 20px rgba(255, 95, 173, 0.4);
+}
+
+.overlay-screen button:hover {
+  transform: scale(1.05);
+  background: #ff85c2;
+  box-shadow: 0 0 30px rgba(255, 95, 173, 0.6);
+}
